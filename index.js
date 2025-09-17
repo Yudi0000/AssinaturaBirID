@@ -1,8 +1,11 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import { plainAddPlaceholder } from '@signpdf/placeholder-plain';
-import { sign } from '@signpdf/signpdf';
-import fs from 'fs';
+import pkg from '@signpdf/signpdf';
+const { sign } = pkg;
+
+import placeholderPkg from '@signpdf/placeholder-plain';
+const { plainAddPlaceholder } = placeholderPkg;
+
 import crypto from 'crypto';
 
 const app = express();
@@ -52,3 +55,4 @@ app.post('/sign', (req, res) => {
 app.listen(3000, () => {
   console.log('🚀 API rodando');
 });
+

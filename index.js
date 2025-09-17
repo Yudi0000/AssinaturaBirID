@@ -47,27 +47,27 @@ app.post('/prepare', (req, res) => {
 // ========================
 // Endpoint 2: Sign PDF
 // ========================
-app.post('/sign', (req, res) => {
+app.post("/sign", (req, res) => {
   try {
-    const { pdfPreparedBase64, rawSignatureBase64 } = req.body;
-    if (!pdfPreparedBase64 || !rawSignatureBase64)
-      return res.status(400).json({ error: 'Dados insuficientes' });
+    const { pdfBase64, rawSignatureBase64 } = req.body;
 
-    const pdfBuffer = Buffer.from(pdfPreparedBase64, 'base64');
-    const signatureBuffer = Buffer.from(rawSignatureBase64, 'base64');
+    const pdfBuffer = Buffer.from(pdfBase64, "base64");
+    const signatureBuffer = Buffer.from(rawSignatureBase64, "base64");
 
-    // Assina PDF
-    const signedPdf = sign(pdfBuffer, signatureBuffer);
+    const { replaceSignature } = require("node-signpdf");
+    const signedPdf = replaceSignature(pdfBuffer, signatureBuffer);
 
-    res.json({ pdfSignedBase64: signedPdf.toString('base64') });
+    res.json({ signedPdfBase64: signedPdf.toString("base64") });
   } catch (err) {
-    console.error('Erro em /sign:', err);
-    res.status(500).json({ error: 'Erro ao assinar PDF' });
+    console.error(err);
+    res.status(500).json({ error: err.message });
   }
 });
+
 
 // ========================
 // Inicialização
 // ========================
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 API rodando na porta ${PORT}`));
+

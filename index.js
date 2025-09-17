@@ -1,7 +1,7 @@
-import express from "express";
-import bodyParser from "body-parser";
-import { plainAddPlaceholder, replaceSignature } from "node-signpdf";
-import crypto from "crypto";
+const express = require("express");
+const bodyParser = require("body-parser");
+const { plainAddPlaceholder, replaceSignature } = require("node-signpdf");
+const crypto = require("crypto");
 
 const app = express();
 app.use(bodyParser.json({ limit: "10mb" }));

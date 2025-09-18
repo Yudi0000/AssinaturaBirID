@@ -9,7 +9,7 @@ import crypto from 'crypto';
 const app = express();
 
 // ↑ Aumenta limite para PDFs grandes
-app.use(bodyParser.json({ limit: '20mb' }));
+app.use(bodyParser.json({ limit: '50mb' }));
 
 // Logs de inicialização
 console.log('✅ Inicializando API...');
@@ -47,27 +47,56 @@ app.post('/prepare', (req, res) => {
 // ========================
 // Endpoint 2: Sign PDF
 // ========================
+// Rota para assinar PDF
 app.post("/sign", (req, res) => {
   try {
     const { pdfBase64, rawSignatureBase64 } = req.body;
 
-    const pdfBuffer = Buffer.from(pdfBase64, "base64");
-    const signatureBuffer = Buffer.from(rawSignatureBase64, "base64");
+    // ✅ Validação básica
+    if (!pdfBase64 || !rawSignatureBase64) {
+      return res.status(400).json({
+        error: "pdfBase64 e rawSignatureBase64 são obrigatórios",
+        received: req.body
+      });
+    }
 
-    const { replaceSignature } = require("node-signpdf");
-    const signedPdf = replaceSignature(pdfBuffer, signatureBuffer);
+    // Converte base64 para Buffer
+    let pdfBuffer, signatureBuffer;
+    try {
+      pdfBuffer = Buffer.from(pdfBase64, "base64");
+    } catch (e) {
+      return res.status(400).json({ error: "pdfBase64 inválido", details: e.message });
+    }
 
-    res.json({ signedPdfBase64: signedPdf.toString("base64") });
+    try {
+      signatureBuffer = Buffer.from(rawSignatureBase64, "base64");
+    } catch (e) {
+      return res.status(400).json({ error: "rawSignatureBase64 inválido", details: e.message });
+    }
+
+    // Substitui placeholder pelo rawSignature
+    let signedPdf;
+    try {
+      signedPdf = replaceSignature(pdfBuffer, signatureBuffer);
+    } catch (e) {
+      return res.status(500).json({ error: "Falha ao inserir assinatura no PDF", details: e.message });
+    }
+
+    // Retorna PDF assinado em base64
+    return res.json({
+      signedPdfBase64: signedPdf.toString("base64")
+    });
+
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: "Erro interno do servidor", details: err.message });
   }
 });
 
-
-// ========================
-// Inicialização
-// ========================
+// Porta
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 API rodando na porta ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`🚀 API rodando na porta ${PORT}`);
+});
+
 

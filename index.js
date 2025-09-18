@@ -2,14 +2,12 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import { plainAddPlaceholder } from '@signpdf/placeholder-plain';
 import crypto from 'crypto';
-import pkg from 'node-signpdf'; // ✅ CommonJS import
 import { createRequire } from 'module';
+
 const require = createRequire(import.meta.url);
 const { replaceSignature } = require('node-signpdf');
 
 const app = express();
-
-// ↑ Aumenta limite para PDFs grandes
 app.use(bodyParser.json({ limit: '50mb' }));
 
 console.log('✅ Inicializando API...');
@@ -98,4 +96,5 @@ app.listen(PORT, () => {
   console.log(`🚀 API rodando na porta ${PORT}`);
 
 });
+
 

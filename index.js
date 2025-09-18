@@ -3,7 +3,9 @@ import bodyParser from 'body-parser';
 import { plainAddPlaceholder } from '@signpdf/placeholder-plain';
 import crypto from 'crypto';
 import pkg from 'node-signpdf'; // ✅ CommonJS import
-const { replaceSignature } = pkg; 
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const { replaceSignature } = require('node-signpdf');
 
 const app = express();
 
@@ -96,3 +98,4 @@ app.listen(PORT, () => {
   console.log(`🚀 API rodando na porta ${PORT}`);
 
 });
+

@@ -9,7 +9,6 @@ const app = express();
 // ↑ Aumenta limite para PDFs grandes
 app.use(bodyParser.json({ limit: '50mb' }));
 
-// Logs de inicialização
 console.log('✅ Inicializando API...');
 
 // ========================
@@ -26,7 +25,7 @@ app.post('/prepare', (req, res) => {
     const pdfWithPlaceholder = plainAddPlaceholder({
       pdfBuffer,
       reason: 'Assinado digitalmente via BirdID',
-      signatureLength: 8192,
+      signatureLength: 8192, // espaço suficiente para assinatura
     });
 
     // Calcula hash SHA256 para BirdID
@@ -45,8 +44,7 @@ app.post('/prepare', (req, res) => {
 // ========================
 // Endpoint 2: Sign PDF
 // ========================
-// Rota para assinar PDF
-app.post("/sign", (req, res) => {
+app.post('/sign', (req, res) => {
   try {
     const { pdfBase64, rawSignatureBase64 } = req.body;
 
@@ -86,7 +84,7 @@ app.post("/sign", (req, res) => {
     });
 
   } catch (err) {
-    console.error(err);
+    console.error('Erro interno em /sign:', err);
     return res.status(500).json({ error: "Erro interno do servidor", details: err.message });
   }
 });
@@ -96,7 +94,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 API rodando na porta ${PORT}`);
 });
-
-
-
-

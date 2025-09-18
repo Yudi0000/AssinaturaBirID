@@ -5,6 +5,7 @@ const { sign } = pkg;
 import placeholderPkg from '@signpdf/placeholder-plain';
 const { plainAddPlaceholder } = placeholderPkg;
 import crypto from 'crypto';
+import { replaceSignature } from "node-signpdf"; 
 
 const app = express();
 
@@ -98,5 +99,6 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 API rodando na porta ${PORT}`);
 });
+
 
 

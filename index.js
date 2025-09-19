@@ -5,8 +5,8 @@ import crypto from 'crypto';
 import { createRequire } from 'module';
 
 const require = createRequire(import.meta.url);
-import { replaceSignature } from '@signpdf/utils';
-
+import utils from '@signpdf/utils';
+const { replaceSignature } = utils;
 const app = express();
 app.use(bodyParser.json({ limit: '50mb' }));
 
@@ -73,6 +73,7 @@ app.listen(PORT, () => {
   console.log(`🚀 API rodando na porta ${PORT}`);
 
 });
+
 
 
 

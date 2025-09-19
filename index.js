@@ -5,7 +5,7 @@ import crypto from 'crypto';
 import { createRequire } from 'module';
 
 const require = createRequire(import.meta.url);
-const { replaceSignature } = require('node-signpdf');
+import { replaceSignature } from '@signpdf/utils';
 
 const app = express();
 app.use(bodyParser.json({ limit: '50mb' }));
@@ -48,45 +48,22 @@ app.post('/prepare', (req, res) => {
 app.post('/sign', (req, res) => {
   try {
     const { pdfBase64, rawSignatureBase64 } = req.body;
-
-    // ✅ Validação básica
     if (!pdfBase64 || !rawSignatureBase64) {
-      return res.status(400).json({
-        error: "pdfBase64 e rawSignatureBase64 são obrigatórios",
-        received: req.body
-      });
+      return res.status(400).json({ error: 'pdfBase64 e rawSignatureBase64 obrigatórios' });
     }
 
-    // Converte base64 para Buffer
-    let pdfBuffer, signatureBuffer;
-    try {
-      pdfBuffer = Buffer.from(pdfBase64, "base64");
-    } catch (e) {
-      return res.status(400).json({ error: "pdfBase64 inválido", details: e.message });
-    }
+    const pdfBuffer = Buffer.from(pdfBase64, 'base64');
+    const signatureBuffer = Buffer.from(rawSignatureBase64, 'base64');
 
-    try {
-      signatureBuffer = Buffer.from(rawSignatureBase64, "base64");
-    } catch (e) {
-      return res.status(400).json({ error: "rawSignatureBase64 inválido", details: e.message });
-    }
+    const signedPdf = replaceSignature(pdfBuffer, signatureBuffer);
 
-    // Substitui placeholder pelo rawSignature
-    let signedPdf;
-    try {
-      signedPdf = replaceSignature(pdfBuffer, signatureBuffer);
-    } catch (e) {
-      return res.status(500).json({ error: "Falha ao inserir assinatura no PDF", details: e.message });
-    }
-
-    // Retorna PDF assinado em base64
     return res.json({
-      signedPdfBase64: signedPdf.toString("base64")
+      signedPdfBase64: signedPdf.toString('base64')
     });
 
-  } catch (err) {
-    console.error('Erro interno em /sign:', err);
-    return res.status(500).json({ error: "Erro interno do servidor", details: err.message });
+  } catch (e) {
+    console.error('Erro em /sign:', e);
+    return res.status(500).json({ error: 'Falha ao inserir assinatura no PDF', details: e.message });
   }
 });
 
@@ -96,5 +73,6 @@ app.listen(PORT, () => {
   console.log(`🚀 API rodando na porta ${PORT}`);
 
 });
+
 
 

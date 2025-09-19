@@ -1,0 +1,16 @@
+{
+  "name": "pdf-signer",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+"dependencies": {
+  "express": "^4.21.2",
+  "body-parser": "^1.20.3",
+  "@signpdf/signpdf": "^3.2.5",
+  "@signpdf/placeholder-plain": "^3.2.5"
+}
+
+}
